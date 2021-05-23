@@ -49,13 +49,13 @@ namespace Graph {
 
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::TextBox^  textBox3;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ X;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ F_1;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ F_2;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column1;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column2;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column3;
-	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column4;
+
+
+
+
+
+
+
 	private: System::Windows::Forms::TextBox^ textBox_n_graph;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::DataGridView^ dataGridView2;
@@ -76,6 +76,15 @@ namespace Graph {
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Label^ label4;
 	private: System::Windows::Forms::Label^ label5;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ X;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ F_1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ F_2;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column1;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column2;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column3;
+	private: System::Windows::Forms::DataGridViewTextBoxColumn^ Column4;
+	private: System::Windows::Forms::Button^ button2;
+	private: System::Windows::Forms::Button^ button3;
 
 
 
@@ -164,6 +173,8 @@ namespace Graph {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->button3 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->dataGridView2))->BeginInit();
 			this->SuspendLayout();
@@ -185,7 +196,7 @@ namespace Graph {
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(397, 374);
+			this->button1->Location = System::Drawing::Point(411, 374);
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(142, 29);
 			this->button1->TabIndex = 1;
@@ -218,12 +229,14 @@ namespace Graph {
 			this->F_1->HeaderText = L"x_i-1";
 			this->F_1->Name = L"F_1";
 			this->F_1->ReadOnly = true;
+			this->F_1->Width = 150;
 			// 
 			// F_2
 			// 
 			this->F_2->HeaderText = L"x_i";
 			this->F_2->Name = L"F_2";
 			this->F_2->ReadOnly = true;
+			this->F_2->Width = 150;
 			// 
 			// Column1
 			// 
@@ -416,11 +429,33 @@ namespace Graph {
 			this->label5->TabIndex = 17;
 			this->label5->Text = L"max|F\'\' - S\'\'|";
 			// 
+			// button2
+			// 
+			this->button2->Location = System::Drawing::Point(411, 409);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(142, 29);
+			this->button2->TabIndex = 18;
+			this->button2->Text = L"Main Task 1";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click_1);
+			// 
+			// button3
+			// 
+			this->button3->Location = System::Drawing::Point(411, 444);
+			this->button3->Name = L"button3";
+			this->button3->Size = System::Drawing::Size(142, 29);
+			this->button3->TabIndex = 19;
+			this->button3->Text = L"Main Task 2";
+			this->button3->UseVisualStyleBackColor = true;
+			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1657, 733);
+			this->Controls->Add(this->button3);
+			this->Controls->Add(this->button2);
 			this->Controls->Add(this->label5);
 			this->Controls->Add(this->label4);
 			this->Controls->Add(this->label2);
@@ -685,6 +720,452 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 
 }
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void button2_Click_1(System::Object^ sender, System::EventArgs^ e) {
+
+	GraphPane^ panel = zedGraphControl1->GraphPane;
+	panel->CurveList->Clear();
+	PointPairList^ f1_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f2_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f3_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f4_list = gcnew ZedGraph::PointPairList();
+
+	// Интервал, где есть данные
+	double xmin = 0;
+	double xmax = 2;
+
+	int n = Convert::ToInt64(textBox3->Text);
+	double h = (xmax - xmin) / n;
+
+
+	double xmin_limit = xmin - 0.1;
+	double xmax_limit = xmax + 0.1;
+	/*
+			double ymin_limit = -1.0;
+			double ymax_limit = 100.0;
+	*/
+	//---------------------------------------------------------//
+	std::vector<double> y;
+	std::vector<double> alpha;
+	std::vector<double> beta;
+
+
+	y.push_back(1);
+	alpha.push_back(0);
+	beta.push_back(0);
+
+	for (int i = 1; i < n; i++)
+	{
+		y.push_back(4 * h + h * alpha.back());
+		alpha.push_back(-h / y.back());
+		double right = (6.0 / h) * (function_f(xmin + i * h + h) - 2 * function_f(xmin + i * h) + function_f(xmin + i * h - h));
+		beta.push_back((right - h * beta.back()) / y.back());
+	}
+	y.push_back(1);
+	beta.push_back(0);
+
+	std::vector<double> c(n + 1);
+	std::vector<double> a(n + 1);
+	std::vector<double> b(n + 1);
+	std::vector<double> d(n + 1);
+
+	c[n] = beta[n];
+	// c
+	for (int i = n - 1; i >= 0; i--)
+	{
+		c[i] = alpha[i] * c[i + 1] + beta[i];
+	}
+	// a
+	for (int i = 1; i <= n; i++)
+	{
+		a[i] = function_f(xmin + i * h);
+	}
+	// d
+	for (int i = 1; i <= n; i++)
+	{
+		d[i] = (c[i] - c[i - 1]) / h;
+	}
+	// b
+	for (int i = 1; i <= n; i++)
+	{
+		b[i] = (function_f(xmin + i * h) - function_f(xmin + i * h - h)) / h + c[i] * (h / 3.0) + c[i - 1] * (h / 6.0);
+	}
+	//---------------------------------------------------------//
+
+
+	// Список точек
+	double n_graph = Convert::ToDouble(textBox_n_graph->Text);
+	double h_graph = (xmax - xmin) / n_graph;
+	//int i = 0;
+	dataGridView1->Rows->Clear();
+	dataGridView2->Rows->Clear();
+	for (double x = xmin; x <= xmax; x += h_graph)
+	{
+		double S_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				S_x = a[i] + b[i] * (x - xmin - i * h) + 0.5 * c[i] * (x - xmin - i * h) * (x - xmin - i * h) + (d[i] / 6.0) * (x - xmin - i * h) * (x - xmin - i * h) * (x - xmin - i * h);
+				break;
+			}
+		}
+		double dS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				dS_x = b[i] + c[i] * (x - xmin - i * h) + 0.5 * d[i] * (x - xmin - i * h) * (x - xmin - i * h);
+				break;
+			}
+		}
+		double ddS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				ddS_x = c[i] + d[i] * (x - xmin - i * h);
+				break;
+			}
+		}
+
+		//Добавление на график
+		f1_list->Add(x, function_f(x));
+		f2_list->Add(x, S_x);
+		f3_list->Add(x, function_df(x));
+		f4_list->Add(x, dS_x);
+		//Печать в таблицу
+		/*
+		dataGridView1->Rows->Add();
+		dataGridView1->Rows[i]->Cells[0]->Value = x;
+		dataGridView1->Rows[i]->Cells[1]->Value = floor(f1(x) * 1000) / 1000;
+		dataGridView1->Rows[i]->Cells[2]->Value = floor(f2(x) * 1000) / 1000;
+		*/
+		//i++;
+	}
+	//i = 1;
+	//Печать таблицы
+	double max_delta_f = 0;
+	double max_delta_df = 0;
+	double max_delta_ddf = 0;
+
+	for (int i = 1; i <= n; i++)
+	{
+		dataGridView1->Rows->Add();
+		dataGridView1->Rows[i - 1]->Cells[0]->Value = i;
+		dataGridView1->Rows[i - 1]->Cells[1]->Value = xmin + i * h - h;
+		dataGridView1->Rows[i - 1]->Cells[2]->Value = xmin + i * h;
+		dataGridView1->Rows[i - 1]->Cells[3]->Value = a[i];
+		dataGridView1->Rows[i - 1]->Cells[4]->Value = b[i];
+		dataGridView1->Rows[i - 1]->Cells[5]->Value = c[i];
+		dataGridView1->Rows[i - 1]->Cells[6]->Value = d[i];
+	}
+
+	for (int j = 1; j <= 2 * n; j++)
+	{
+		double S_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				S_x = a[i] + b[i] * (xmin + j * 0.5 * h - xmin - i * h) + 0.5 * c[i] * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h) + (d[i] / 6.0) * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		double dS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				dS_x = b[i] + c[i] * (xmin + j * 0.5 * h - xmin - i * h) + 0.5 * d[i] * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		double ddS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				ddS_x = c[i] + d[i] * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		dataGridView2->Rows->Add();
+		dataGridView2->Rows[j - 1]->Cells[0]->Value = j;
+		dataGridView2->Rows[j - 1]->Cells[1]->Value = xmin + j * h * 0.5;
+		dataGridView2->Rows[j - 1]->Cells[2]->Value = function_f(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[3]->Value = S_x;
+		dataGridView2->Rows[j - 1]->Cells[4]->Value = function_f(xmin + j * 0.5 * h) - S_x;
+		if (abs(function_f(xmin + j * 0.5 * h) - S_x) > max_delta_f)
+		{
+			max_delta_f = abs(function_f(xmin + j * 0.5 * h) - S_x);
+		}
+		dataGridView2->Rows[j - 1]->Cells[5]->Value = function_df(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[6]->Value = dS_x;
+		dataGridView2->Rows[j - 1]->Cells[7]->Value = function_df(xmin + j * 0.5 * h) - dS_x;
+		if (abs(function_df(xmin + j * 0.5 * h) - dS_x) > max_delta_df)
+		{
+			max_delta_df = abs(function_df(xmin + j * 0.5 * h) - dS_x);
+		}
+		dataGridView2->Rows[j - 1]->Cells[8]->Value = function_ddf(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[9]->Value = ddS_x;
+		dataGridView2->Rows[j - 1]->Cells[10]->Value = function_ddf(xmin + j * 0.5 * h) - ddS_x;
+		if (abs(function_ddf(xmin + j * 0.5 * h) - ddS_x) > max_delta_ddf)
+		{
+			max_delta_ddf = abs(function_ddf(xmin + j * 0.5 * h) - ddS_x);
+		}
+	}
+
+	textBox_delta_f->Text = Convert::ToString(max_delta_f);
+	textBox_delta_df->Text = Convert::ToString(max_delta_df);
+	textBox_delta_ddf->Text = Convert::ToString(max_delta_ddf);
+
+	LineItem Curve1 = panel->AddCurve("f(x)", f1_list, Color::Red, SymbolType::None);
+	LineItem Curve2 = panel->AddCurve("S(x)", f2_list, Color::Blue, SymbolType::Plus);
+	LineItem Curve3 = panel->AddCurve("f'(x)", f3_list, Color::Green, SymbolType::None);
+	LineItem Curve4 = panel->AddCurve("S'(x)", f4_list, Color::BlueViolet, SymbolType::Plus);
+
+	// Устанавливаем интересующий нас интервал по оси X
+	panel->XAxis->Scale->Min = xmin_limit;
+	panel->XAxis->Scale->Max = xmax_limit;
+	/*
+			// Устанавливаем интересующий нас интервал по оси Y
+			panel->YAxis->Scale->Min = ymin_limit;
+			panel->YAxis->Scale->Max = ymax_limit;
+	*/
+	// Вызываем метод AxisChange (), чтобы обновить данные об осях. 
+	// В противном случае на рисунке будет показана только часть графика, 
+	// которая умещается в интервалы по осям, установленные по умолчанию
+	zedGraphControl1->AxisChange();
+	// Обновляем график
+	zedGraphControl1->Invalidate();
+
+}
+private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
+
+	GraphPane^ panel = zedGraphControl1->GraphPane;
+	panel->CurveList->Clear();
+	PointPairList^ f1_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f2_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f3_list = gcnew ZedGraph::PointPairList();
+	PointPairList^ f4_list = gcnew ZedGraph::PointPairList();
+
+	// Интервал, где есть данные
+	double xmin = 0;
+	double xmax = 2;
+
+	int n = Convert::ToInt64(textBox3->Text);
+	double h = (xmax - xmin) / n;
+
+
+	double xmin_limit = xmin - 0.1;
+	double xmax_limit = xmax + 0.1;
+	/*
+			double ymin_limit = -1.0;
+			double ymax_limit = 100.0;
+	*/
+	//---------------------------------------------------------//
+	std::vector<double> y;
+	std::vector<double> alpha;
+	std::vector<double> beta;
+
+
+	y.push_back(1);
+	alpha.push_back(0);
+	beta.push_back(0);
+
+	for (int i = 1; i < n; i++)
+	{
+		y.push_back(4 * h + h * alpha.back());
+		alpha.push_back(-h / y.back());
+		double right = (6.0 / h) * (function_f_cos10(xmin + i * h + h) - 2 * function_f_cos10(xmin + i * h) + function_f_cos10(xmin + i * h - h));
+		beta.push_back((right - h * beta.back()) / y.back());
+	}
+	y.push_back(1);
+	beta.push_back(0);
+
+	std::vector<double> c(n + 1);
+	std::vector<double> a(n + 1);
+	std::vector<double> b(n + 1);
+	std::vector<double> d(n + 1);
+
+	c[n] = beta[n];
+	// c
+	for (int i = n - 1; i >= 0; i--)
+	{
+		c[i] = alpha[i] * c[i + 1] + beta[i];
+	}
+	// a
+	for (int i = 1; i <= n; i++)
+	{
+		a[i] = function_f_cos10(xmin + i * h);
+	}
+	// d
+	for (int i = 1; i <= n; i++)
+	{
+		d[i] = (c[i] - c[i - 1]) / h;
+	}
+	// b
+	for (int i = 1; i <= n; i++)
+	{
+		b[i] = (function_f_cos10(xmin + i * h) - function_f_cos10(xmin + i * h - h)) / h + c[i] * (h / 3.0) + c[i - 1] * (h / 6.0);
+	}
+	//---------------------------------------------------------//
+
+
+	// Список точек
+	double n_graph = Convert::ToDouble(textBox_n_graph->Text);
+	double h_graph = (xmax - xmin) / n_graph;
+	//int i = 0;
+	dataGridView1->Rows->Clear();
+	dataGridView2->Rows->Clear();
+	for (double x = xmin; x <= xmax; x += h_graph)
+	{
+		double S_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				S_x = a[i] + b[i] * (x - xmin - i * h) + 0.5 * c[i] * (x - xmin - i * h) * (x - xmin - i * h) + (d[i] / 6.0) * (x - xmin - i * h) * (x - xmin - i * h) * (x - xmin - i * h);
+				break;
+			}
+		}
+		double dS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				dS_x = b[i] + c[i] * (x - xmin - i * h) + 0.5 * d[i] * (x - xmin - i * h) * (x - xmin - i * h);
+				break;
+			}
+		}
+		double ddS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((x >= xmin + i * h - h) && (x <= xmin + i * h))
+			{
+				ddS_x = c[i] + d[i] * (x - xmin - i * h);
+				break;
+			}
+		}
+
+		//Добавление на график
+		f1_list->Add(x, function_f_cos10(x));
+		f2_list->Add(x, S_x);
+		f3_list->Add(x, function_df_dcos10(x));
+		f4_list->Add(x, dS_x);
+		//Печать в таблицу
+		/*
+		dataGridView1->Rows->Add();
+		dataGridView1->Rows[i]->Cells[0]->Value = x;
+		dataGridView1->Rows[i]->Cells[1]->Value = floor(f1(x) * 1000) / 1000;
+		dataGridView1->Rows[i]->Cells[2]->Value = floor(f2(x) * 1000) / 1000;
+		*/
+		//i++;
+	}
+	//i = 1;
+	//Печать таблицы
+	double max_delta_f = 0;
+	double max_delta_df = 0;
+	double max_delta_ddf = 0;
+
+	for (int i = 1; i <= n; i++)
+	{
+		dataGridView1->Rows->Add();
+		dataGridView1->Rows[i - 1]->Cells[0]->Value = i;
+		dataGridView1->Rows[i - 1]->Cells[1]->Value = xmin + i * h - h;
+		dataGridView1->Rows[i - 1]->Cells[2]->Value = xmin + i * h;
+		dataGridView1->Rows[i - 1]->Cells[3]->Value = a[i];
+		dataGridView1->Rows[i - 1]->Cells[4]->Value = b[i];
+		dataGridView1->Rows[i - 1]->Cells[5]->Value = c[i];
+		dataGridView1->Rows[i - 1]->Cells[6]->Value = d[i];
+	}
+
+	for (int j = 1; j <= 2 * n; j++)
+	{
+		double S_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				S_x = a[i] + b[i] * (xmin + j * 0.5 * h - xmin - i * h) + 0.5 * c[i] * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h) + (d[i] / 6.0) * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		double dS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				dS_x = b[i] + c[i] * (xmin + j * 0.5 * h - xmin - i * h) + 0.5 * d[i] * (xmin + j * 0.5 * h - xmin - i * h) * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		double ddS_x;
+		for (int i = 1; i <= n; i++)
+		{
+			if ((xmin + j * 0.5 * h >= xmin + i * h - h) && (xmin + j * 0.5 * h <= xmin + i * h))
+			{
+				ddS_x = c[i] + d[i] * (xmin + j * 0.5 * h - xmin - i * h);
+				break;
+			}
+		}
+
+		dataGridView2->Rows->Add();
+		dataGridView2->Rows[j - 1]->Cells[0]->Value = j;
+		dataGridView2->Rows[j - 1]->Cells[1]->Value = xmin + j * h * 0.5;
+		dataGridView2->Rows[j - 1]->Cells[2]->Value = function_f_cos10(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[3]->Value = S_x;
+		dataGridView2->Rows[j - 1]->Cells[4]->Value = function_f_cos10(xmin + j * 0.5 * h) - S_x;
+		if (abs(function_f_cos10(xmin + j * 0.5 * h) - S_x) > max_delta_f)
+		{
+			max_delta_f = abs(function_f_cos10(xmin + j * 0.5 * h) - S_x);
+		}
+		dataGridView2->Rows[j - 1]->Cells[5]->Value = function_df_dcos10(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[6]->Value = dS_x;
+		dataGridView2->Rows[j - 1]->Cells[7]->Value = function_df_dcos10(xmin + j * 0.5 * h) - dS_x;
+		if (abs(function_df_dcos10(xmin + j * 0.5 * h) - dS_x) > max_delta_df)
+		{
+			max_delta_df = abs(function_df_dcos10(xmin + j * 0.5 * h) - dS_x);
+		}
+		dataGridView2->Rows[j - 1]->Cells[8]->Value = function_ddf_ddcos10(xmin + j * 0.5 * h);
+		dataGridView2->Rows[j - 1]->Cells[9]->Value = ddS_x;
+		dataGridView2->Rows[j - 1]->Cells[10]->Value = function_ddf_ddcos10(xmin + j * 0.5 * h) - ddS_x;
+		if (abs(function_ddf_ddcos10(xmin + j * 0.5 * h) - ddS_x) > max_delta_ddf)
+		{
+			max_delta_ddf = abs(function_ddf_ddcos10(xmin + j * 0.5 * h) - ddS_x);
+		}
+	}
+
+	textBox_delta_f->Text = Convert::ToString(max_delta_f);
+	textBox_delta_df->Text = Convert::ToString(max_delta_df);
+	textBox_delta_ddf->Text = Convert::ToString(max_delta_ddf);
+
+	LineItem Curve1 = panel->AddCurve("f(x)+cos(10x)", f1_list, Color::Red, SymbolType::None);
+	LineItem Curve2 = panel->AddCurve("S(x)", f2_list, Color::Blue, SymbolType::None);
+	LineItem Curve3 = panel->AddCurve("f'(x)+cos'(10x)", f3_list, Color::Green, SymbolType::None);
+	LineItem Curve4 = panel->AddCurve("S'(x)", f4_list, Color::BlueViolet, SymbolType::None);
+
+	// Устанавливаем интересующий нас интервал по оси X
+	panel->XAxis->Scale->Min = xmin_limit;
+	panel->XAxis->Scale->Max = xmax_limit;
+	/*
+			// Устанавливаем интересующий нас интервал по оси Y
+			panel->YAxis->Scale->Min = ymin_limit;
+			panel->YAxis->Scale->Max = ymax_limit;
+	*/
+	// Вызываем метод AxisChange (), чтобы обновить данные об осях. 
+	// В противном случае на рисунке будет показана только часть графика, 
+	// которая умещается в интервалы по осям, установленные по умолчанию
+	zedGraphControl1->AxisChange();
+	// Обновляем график
+	zedGraphControl1->Invalidate();
+
 }
 };
 }
